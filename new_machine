@@ -1,0 +1,37 @@
+#!/bin/bash
+
+[ -d nmap/ ] || {
+  mkdir nmap
+}
+
+[ -f nmap/ports_tcp.nmap ] || {
+  echo "Scanning Ports"
+  nmap $NMAP_FLAGS -p- --min-rate=1000 -T4 "$1" -oA nmap/ports_tcp
+}
+
+tcp=$(grep '.*\/tcp' < nmap/ports_tcp.nmap | awk '{print $1;}' | cut -d '/' -f 1 | paste -sd ',' -)
+echo "TCP Ports found: $tcp"
+
+[ -f nmap/services_tcp.nmap ] || {
+  echo "Scanning Services"
+  nmap $NMAP_FLAGS -p"$tcp" -sV -sC "$1" -oA nmap/services_tcp
+}
+
+echo "Checking TCP services"
+searchsploit --nmap nmap/services_tcp.xml
+
+[ -f nmap/ports_udp.nmap ] || {
+  echo "Scanning UDP Ports"
+  sudo nmap $NMAP_FLAGS -sU -p- --min-rate=1000 -T4 "$1" -oA nmap/ports_udp
+}
+
+udp=$(grep '.*\/udp' < nmap/ports_udp.nmap | awk '{print $1;}' | cut -d '/' -f 1 | paste -sd ',' -)
+echo "UDP Ports found: $udp"
+
+[ -f nmap/services_udp.nmap ] || {
+  echo "Scanning Services"
+  sudo nmap $NMAP_FLAGS -sU -p"$udp" -sV -sC "$1" -oA nmap/services_udp
+}
+
+echo "Checking UDP services"
+searchsploit --nmap nmap/services_udp.xml
