@@ -1,0 +1,5 @@
+#!/bin/sh
+
+PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData):"
+
+grep -v -E $PATTERN $1
