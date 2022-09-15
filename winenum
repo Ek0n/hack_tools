@@ -1,5 +1,5 @@
 #!/bin/sh
 
-PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData):"
+PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayNAme|logonHours|givenName|isCriticalSytemObject):"
 
 grep -v -E $PATTERN $1
