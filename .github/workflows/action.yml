@@ -11,7 +11,14 @@ jobs:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+          
+      - name: Checkout Github repo
+        uses: actions/checkout@v3
+    
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
