@@ -1,5 +1,15 @@
 #!/bin/sh
 
-PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayNAme|logonHours|givenName|isCriticalSytemObject):"
+filter_ldap() {
+  PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayNAme|logonHours|givenName|isCriticalSytemObject):"
+  grep -v -E $PATTERN "$1"
+}
 
-grep -v -E $PATTERN $1
+# https://0xdf.gitlab.io/2019/06/01/htb-sizzle.html
+test_smb() {
+ smbclient -N -L "\\\\$1" | grep Disk | sed 's/^\s*\(.*\)\s*Disk.*/\1/' | while read -r share;
+  do echo "======${share}======";
+   smbclient -N "//$1/${share}" -c dir;
+   echo;
+  done
+}
