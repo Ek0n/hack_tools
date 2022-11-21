@@ -7,9 +7,19 @@ filter_ldap() {
 
 # https://0xdf.gitlab.io/2019/06/01/htb-sizzle.html
 test_smb() {
- smbclient -N -L "\\\\$1" | grep Disk | sed 's/^\s*\(.*\)\s*Disk.*/\1/' | while read -r share;
-  do echo "======${share}======";
-   smbclient -N "//$1/${share}" -c dir;
-   echo;
-  done
+  TMP_FILE="/tmp/.test_smb"
+  echo "Testing SMB at $1"
+  smbclient -N -L "\\\\$1" 2> /dev/null | tee "$TMP_FILE"
+  if grep -q "Disk" "$TMP_FILE";
+  then
+    grep "Disk" "$TMP_FILE" | sed 's/^\s*\(.*\)\s*Disk.*/\1/' | while read -r share;
+    do echo "======${share}======";
+      smbclient -N "//$1/${share}" -c dir;
+      echo;
+    done
+  else
+    echo "\e[32mCould not find 'Disks' in the share, check manually\e[0m"
+  fi
+
+  rm "$TMP_FILE"
 }
