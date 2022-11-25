@@ -23,3 +23,11 @@ smb_test_shares() {
 
   rm "$TMP_FILE"
 }
+
+smb_test_writable() {
+  TMP_NAME="potato"
+  find "$1" -type d | while read -r directory; do
+    touch "${directory}/$TMP_NAME" 2>/dev/null && echo "${directory} - file writable" && rm "${directory}/$TMP_NAME";
+    mkdir "${directory}/$TMP_NAME" 2>/dev/null && echo "${directory} - directory writable" && rmdir "${directory}/$TMP_NAME";
+  done
+}
