@@ -1,12 +1,12 @@
 #!/bin/sh
 
-filter_ldap() {
+ldap_filter() {
   PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayNAme|logonHours|givenName|isCriticalSytemObject):"
   grep -v -E $PATTERN "$1"
 }
 
 # https://0xdf.gitlab.io/2019/06/01/htb-sizzle.html
-test_smb() {
+smb_test_shares() {
   TMP_FILE="/tmp/.test_smb"
   echo "Testing SMB at $1"
   smbclient -N -L "\\\\$1" 2> /dev/null | tee "$TMP_FILE"
