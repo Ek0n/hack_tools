@@ -1,26 +1,37 @@
 #!/bin/sh
 
 ldap_filter() {
-  PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayNAme|logonHours|givenName|isCriticalSytemObject):"
-  grep -v -E $PATTERN "$1"
+  PATTERN="(cn|dn|objectClass|distinguishedName|instanceType|whenCreated|whenChanged|uSNCreated|uSNChanged|name|objectGUID|userAccountControl|badPwdCount|codePage|countryCode|badPasswordTime|lastLogoff|lastLogon|pwdLastSet|primaryGroupID|objectSid|accountExpires|logonCount|sAMAccountName|sAMAccountType|userPrincipalName|objectCategory|dSCorePropagationData|sn|memberOf|displayName|logonHours|givenName|isCriticalSystemObject|ref|member|dnsRecord|groupType|scriptPath|lastLogonTimestamp|subRefs|wellKnownObjects|showInAdvancedViewOnly|systemFlags|ipsecName|ipsecID|ipsecDataType|ipsecData|ipsecOwnersReference|msDS-SupportedEncryptionTypes|gPLink|lastSetTime|priorSetTime):"
+  grep -v -E "$PATTERN" "$1"
 }
 
 # https://0xdf.gitlab.io/2019/06/01/htb-sizzle.html
 smb_test_shares() {
+  AUTH_FILE="/tmp/.auth_smb"
+  FLAGS=""
+  if [ $# -eq 3 ]
+  then
+    echo "username = $2" > $AUTH_FILE
+    echo "password = $3" >> $AUTH_FILE
+    FLAGS="-A $AUTH_FILE"
+  else
+    FLAGS="-N"
+  fi
   TMP_FILE="/tmp/.test_smb"
   echo "Testing SMB at $1"
-  smbclient -N -L "\\\\$1" 2> /dev/null | tee "$TMP_FILE"
+  smbclient "$FLAGS" -g -L "$1" 2> /dev/null | tee "$TMP_FILE"
   if grep -q "Disk" "$TMP_FILE";
   then
-    grep "Disk" "$TMP_FILE" | sed 's/^\s*\(.*\)\s*Disk.*/\1/' | while read -r share;
+    grep "Disk" "$TMP_FILE" | sed 's/Disk|\(*.\)|.*/\1/' | while read -r share;
     do echo "======${share}======";
-      smbclient -N "//$1/${share}" -c dir;
+      smbclient "$FLAGS" -c dir "//$1/${share}" ;
       echo;
     done
   else
     echo "\e[32mCould not find 'Disks' in the share, check manually\e[0m"
   fi
 
+  rm "$AUTH_FILE"
   rm "$TMP_FILE"
 }
 
