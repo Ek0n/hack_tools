@@ -28,7 +28,7 @@ smb_test_shares() {
       echo;
     done
   else
-    echo "\e[32mCould not find 'Disks' in the share, check manually\e[0m"
+    echo "Could not find 'Disks' in the share, check manually"
   fi
 
   rm "$AUTH_FILE"
